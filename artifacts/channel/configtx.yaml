@@ -17,77 +17,77 @@ Organizations:
                 Rule: "OR('OrdererMSP.admin')"
 
     - &Org1
-        Name: Org1MSP
-        ID: Org1MSP
+        Name: ${ORG1_NAME}MSP
+        ID: ${ORG1_NAME}MSP
 
-        MSPDir: ../../setup1/vm1/crypto-config/peerOrganizations/org1.example.com/msp
+        MSPDir: ${ORG1_MSP_DIR}
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+                Rule: "OR('${ORG1_NAME}MSP.admin', '${ORG1_NAME}MSP.peer', '${ORG1_NAME}MSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+                Rule: "OR('${ORG1_NAME}MSP.admin', '${ORG1_NAME}MSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin')"
+                Rule: "OR('${ORG1_NAME}MSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org1MSP.peer')"
+                Rule: "OR('${ORG1_NAME}MSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org1.example.com
+            - Host: ${PEER0_ORG1_HOST}
               Port: 7051
 
     - &Org2
-        Name: Org2MSP
+        Name: ${ORG2_NAME}MSP
 
-        ID: Org2MSP
+        ID: ${ORG2_NAME}MSP
 
-        MSPDir: ../../setup1/vm2/crypto-config/peerOrganizations/org2.example.com/msp
+        MSPDir: ${ORG2_MSP_DIR}
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+                Rule: "OR('${ORG2_NAME}MSP.admin', '${ORG2_NAME}MSP.peer', '${ORG2_NAME}MSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
+                Rule: "OR('${ORG2_NAME}MSP.admin', '${ORG2_NAME}MSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin')"
+                Rule: "OR('${ORG2_NAME}MSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org2MSP.peer')"
+                Rule: "OR('${ORG2_NAME}MSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org2.example.com
+            - Host: ${PEER0_ORG2_HOST}
               Port: 9051
 
     - &Org3
-        Name: Org3MSP
+        Name: ${ORG3_NAME}MSP
 
-        ID: Org3MSP
+        ID: ${ORG3_NAME}MSP
 
-        MSPDir: ../../setup1/vm3/crypto-config/peerOrganizations/org3.example.com/msp
+        MSPDir: ${ORG3_MSP_DIR}
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+                Rule: "OR('${ORG3_NAME}MSP.admin', '${ORG3_NAME}MSP.peer', '${ORG3_NAME}MSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
+                Rule: "OR('${ORG3_NAME}MSP.admin', '${ORG3_NAME}MSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin')"
+                Rule: "OR('${ORG3_NAME}MSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org3MSP.peer')"
+                Rule: "OR('${ORG3_NAME}MSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org3.example.com
+            - Host: ${PEER0_ORG3_HOST}
               Port: 11051
 
 Capabilities:
@@ -130,12 +130,12 @@ Orderer: &OrdererDefaults
 
     EtcdRaft:
         Consenters:
-        - Host: orderer.example.com
+        - Host: ${ORDERER_HOST}
           Port: 7050
-          ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-          ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+          ClientTLSCert: ${ORDERER_TLS_CERT_PATH}
+          ServerTLSCert: ${ORDERER_TLS_CERT_PATH}
     Addresses:
-        - orderer.example.com:7050
+        - ${ORDERER_HOST}:7050
 
     BatchTimeout: 2s
     BatchSize:
@@ -196,22 +196,22 @@ Profiles:
             OrdererType: etcdraft
             EtcdRaft:
                 Consenters:
-                - Host: orderer.example.com
+                - Host: ${ORDERER_HOST}
                   Port: 7050
-                  ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                - Host: orderer2.example.com
+                  ClientTLSCert: ${ORDERER_TLS_CERT_PATH}
+                  ServerTLSCert: ${ORDERER_TLS_CERT_PATH}
+                - Host: ${ORDERER2_HOST}
                   Port: 8050
-                  ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                - Host: orderer3.example.com
+                  ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/${ORDERER2_HOST}/tls/server.crt
+                  ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/${ORDERER2_HOST}/tls/server.crt
+                - Host: ${ORDERER3_HOST}
                   Port: 9050
-                  ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+                  ClientTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/${ORDERER3_HOST}/tls/server.crt
+                  ServerTLSCert: ../../setup1/vm4/crypto-config/ordererOrganizations/example.com/orderers/${ORDERER3_HOST}/tls/server.crt
             Addresses:
-                - orderer.example.com:7050
-                - orderer2.example.com:8050
-                - orderer3.example.com:9050
+                - ${ORDERER_HOST}:7050
+                - ${ORDERER2_HOST}:8050
+                - ${ORDERER3_HOST}:9050
 
             Organizations:
             - *OrdererOrg

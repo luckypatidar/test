@@ -1,25 +1,46 @@
-export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export PEER0_ORG1_CA=${PWD}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-export PEER0_ORG2_CA=${PWD}/../vm2/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/../vm3/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
-export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
+function exportVariables(){
+    export CORE_PEER_TLS_ENABLED=true
+    export DOMAIN_OF_ORDERER=$DOMAIN_OF_ORDERER
+    export DOMAIN_OF_ORGANIZATION1=$DOMAIN_OF_ORGANIZATION1
+    export DOMAIN_OF_ORGANIZATION2=$DOMAIN_OF_ORGANIZATION2
+    export DOMAIN_OF_ORGANIZATION3=$DOMAIN_OF_ORGANIZATION3
+    export ORDERER_CA=${PWD}/../vm4/crypto-config/ordererOrganizations/${DOMAIN_OF_ORDERER}/orderers/orderer.${DOMAIN_OF_ORDERER}/msp/tlscacerts/tlsca.${DOMAIN_OF_ORDERER}-cert.pem
+    export PEER0_ORG1_CA=${PWD}/crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/peers/peer0.${DOMAIN_OF_ORGANIZATION}/tls/ca.crt
+    export PEER0_ORG2_CA=${PWD}/../vm2/crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION2}/peers/peer0.${DOMAIN_OF_ORGANIZATION2}/tls/ca.crt
+    export PEER0_ORG3_CA=${PWD}/../vm3/crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION3}/peers/peer0.${DOMAIN_OF_ORGANIZATION3}/tls/ca.crt
+    export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
+    export CHANNEL_NAME=$CHANNEL_NAME
+    export NAME_OF_ORGANIZATION=$NAME_OF_ORGANIZATION
+    export HOST_COMPUTER_IP_ADDRESS=$HOST_COMPUTER_IP_ADDRESS
+    export ORDERER_COMPUTER_IP_ADDRESS=$ORDERER_COMPUTER_IP_ADDRESS
+    export CC_NAME=$CC_NAME
+    export CC_PATH=$CC_PATH
+}
 
+exportVariables
 
-export CHANNEL_NAME=mychannel
-
+read -p "Orderer Domain: "  DOMAIN_OF_ORDERER
+read -p "Organization1 Domain: " DOMAIN_OF_ORGANIZATION1
+read -p "Organization2 Domain: " DOMAIN_OF_ORGANIZATION2
+read -p "Organization3 Domain: " DOMAIN_OF_ORGANIZATION3
+read -p "Channel Name: " CHANNEL_NAME
+read -p "Organization Name: "  NAME_OF_ORGANIZATION
+read -p "Computer IP Address: " HOST_COMPUTER_IP_ADDRESS
+read -p "Order Host IP Address: " ORDERER_COMPUTER_IP_ADDRESS
+read -p "CC NAME: " CC_NAME
+read -p "CC PATH: " CC_PATH
 setGlobalsForPeer0Org1() {
-    export CORE_PEER_LOCALMSPID="Org1MSP"
+    export CORE_PEER_LOCALMSPID="${NAME_OF_ORGANIZATION}MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:7051
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION1}/users/Admin@${DOMAIN_OF_ORGANIZATION1}/msp
+    export CORE_PEER_ADDRESS=${HOST_COMPUTER_IP_ADDRESS}:7051
 }
 
 setGlobalsForPeer1Org1() {
-    export CORE_PEER_LOCALMSPID="Org1MSP"
+    export CORE_PEER_LOCALMSPID="${NAME_OF_ORGANIZATION}MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:8051
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION1}/users/Admin@${DOMAIN_OF_ORGANIZATION1}/msp
+    export CORE_PEER_ADDRESS=${HOST_COMPUTER_IP_ADDRESS}:8051
 
 }
 
@@ -48,11 +69,11 @@ presetup() {
 }
 # presetup
 
-CHANNEL_NAME="mychannel"
+CHANNEL_NAME=${CHANNEL_NAME}
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./../../artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH=${CC_PATH}
+CC_NAME=${CC_NAME}
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
