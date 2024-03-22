@@ -1,12 +1,12 @@
 version: "2"
 
 networks:
-  test:
+  acedefi:
 
 services:
   orderer.example.com:
-    container_name: orderer.example.com
-    image: hyperledger/fabric-orderer:2.1
+    container_name: ${DOMAIN_OF_ORDERER}
+    image: hyperledger/fabric-orderer:2.5
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=info
@@ -14,7 +14,7 @@ services:
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPID=${ORDERER_MSP}
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
@@ -33,15 +33,15 @@ services:
       - 7050:7050
       - 8443:8443
     networks:
-      - test
+      - ${NETWORK_NAME}
     volumes:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/genesis.block
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER}/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER}/tls:/var/hyperledger/orderer/tls
   
   orderer2.example.com:
-    container_name: orderer2.example.com
-    image: hyperledger/fabric-orderer:2.1
+    container_name: ${DOMAIN_OF_ORDERER_TWO}
+    image: hyperledger/fabric-orderer:2.5
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
@@ -49,7 +49,7 @@ services:
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPID=${ORDERER_MSP}
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
@@ -68,16 +68,16 @@ services:
       - 8050:8050
       - 8444:8443
     networks:
-      - test
+      - ${NETWORK_NAME}
     volumes:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp:/var/hyperledger/orderer/msp
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER_TWO}/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER_TWO}/tls:/var/hyperledger/orderer/tls
 
 
   orderer3.example.com:
-    container_name: orderer3.example.com
-    image: hyperledger/fabric-orderer:2.1
+    container_name: ${DOMAIN_OF_ORDERER_THREE}
+    image: hyperledger/fabric-orderer:2.5
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
@@ -85,7 +85,7 @@ services:
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPID=${ORDERER_MSP}
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
@@ -104,8 +104,8 @@ services:
       - 9050:9050
       - 8445:8443
     networks:
-      - test
+      - ${NETWORK_NAME}
     volumes:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp:/var/hyperledger/orderer/msp
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER_THREE}/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/example.com/orderers/${DOMAIN_OF_ORDERER_THREE}/tls:/var/hyperledger/orderer/tls

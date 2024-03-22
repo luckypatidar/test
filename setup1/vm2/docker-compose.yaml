@@ -1,32 +1,32 @@
 version: "2"
 
 networks:
-  test:
+  acedefi:
 
 services:
   # ca-org2:
   #   image: hyperledger/fabric-ca
   #   environment:
   #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-  #     - FABRIC_CA_SERVER_CA_NAME=ca.org2.example.com
-  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
+  #     - FABRIC_CA_SERVER_CA_NAME=ca.${DOMAIN_OF_ORGANIZATION}
+  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.${DOMAIN_OF_ORGANIZATION}-cert.pem
   #     - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
   #     - FABRIC_CA_SERVER_TLS_ENABLED=true
-  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-tls/tlsca.org2.example.com-cert.pem
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-tls/tlsca.${DOMAIN_OF_ORGANIZATION}-cert.pem
   #     - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-tls/priv_sk
   #   ports:
   #     - "8054:7054"
   #   command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
   #   volumes:
-  #     - ./crypto-config/peerOrganizations/org2.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
-  #     - ./crypto-config/peerOrganizations/org2.example.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
-  #   container_name: ca.org2.example.com
-  #   hostname: ca.org2.example.com
+  #     - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/ca/:/etc/hyperledger/fabric-ca-server-config
+  #     - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/tlsca/:/etc/hyperledger/fabric-ca-server-tls
+  #   container_name: ca.${DOMAIN_OF_ORGANIZATION}
+  #   hostname: ca.${DOMAIN_OF_ORGANIZATION}
   #   networks:
   #     - test
 
   couchdb2:
-    container_name: couchdb2
+    container_name: ${DB_NAME_ZERO}
     image: hyperledger/fabric-couchdb
     environment:
       - COUCHDB_USER=
@@ -34,10 +34,10 @@ services:
     ports:
       - 7984:5984
     networks:
-      - test
+      - ${NETWORK_NAME}
 
   couchdb3:
-    container_name: couchdb3
+    container_name: ${DB_NAME_ONE}
     image: hyperledger/fabric-couchdb
     environment:
       - COUCHDB_USER=
@@ -45,31 +45,31 @@ services:
     ports:
       - 8984:5984
     networks:
-      - test
+      - ${NETWORK_NAME}
 
-  peer0.org2.example.com:
-    container_name: peer0.org2.example.com
+  peer0.org2:
+    container_name: peer0.${DOMAIN_OF_ORGANIZATION}
     extends:
       file: base.yaml
       service: peer-base
     environment:
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - CORE_PEER_LOCALMSPID=Org2MSP
+      - CORE_PEER_LOCALMSPID=${ORG_MSP}
 
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_${NETWORK_NAME}
 
-      - CORE_PEER_ID=peer0.org2.example.com
-      - CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+      - CORE_PEER_ID=peer0.${DOMAIN_OF_ORGANIZATION}
+      - CORE_PEER_ADDRESS=peer0.${DOMAIN_OF_ORGANIZATION}:9051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
-      - CORE_PEER_CHAINCODEADDRESS=peer0.org2.example.com:9052
+      - CORE_PEER_CHAINCODEADDRESS=peer0.${DOMAIN_OF_ORGANIZATION}:9052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
       # Exposed for discovery Service
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:9051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org2.example.com:10051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.${DOMAIN_OF_ORGANIZATION}:9051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.${DOMAIN_OF_ORGANIZATION}:10051
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${DB_NAME_ZERO}:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
       - CORE_METRICS_PROVIDER=prometheus
@@ -82,36 +82,36 @@ services:
     ports:
       - 9051:9051
     volumes:
-      - ./crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/peers/peer0.${DOMAIN_OF_ORGANIZATION}/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/peers/peer0.${DOMAIN_OF_ORGANIZATION}/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
-      - test
+      - ${NETWORK_NAME}
 
-  peer1.org2.example.com:
-    container_name: peer1.org2.example.com
+  peer1.org2:
+    container_name: peer1.${DOMAIN_OF_ORGANIZATION}
     extends:
       file: base.yaml
       service: peer-base
     environment:
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - CORE_PEER_LOCALMSPID=Org2MSP
+      - CORE_PEER_LOCALMSPID=${ORG_MSP}
 
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_${NETWORK_NAME}
 
-      - CORE_PEER_ID=peer1.org2.example.com
-      - CORE_PEER_ADDRESS=peer1.org2.example.com:10051
+      - CORE_PEER_ID=peer1.${DOMAIN_OF_ORGANIZATION}
+      - CORE_PEER_ADDRESS=peer1.${DOMAIN_OF_ORGANIZATION}:10051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
-      - CORE_PEER_CHAINCODEADDRESS=peer1.org2.example.com:10052
+      - CORE_PEER_CHAINCODEADDRESS=peer1.${DOMAIN_OF_ORGANIZATION}:10052
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
       # Exposed for discovery Service
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org2.example.com:10051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org2.example.com:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.${DOMAIN_OF_ORGANIZATION}:10051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.${DOMAIN_OF_ORGANIZATION}:9051
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${DB_NAME_ONE}:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
       - CORE_METRICS_PROVIDER=prometheus
@@ -124,9 +124,9 @@ services:
     ports:
       - 10051:10051
     volumes:
-      - ./crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/peers/peer1.${DOMAIN_OF_ORGANIZATION}/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/${DOMAIN_OF_ORGANIZATION}/peers/peer1.${DOMAIN_OF_ORGANIZATION}/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
-      - test
+      - ${NETWORK_NAME}
